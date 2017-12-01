@@ -4,47 +4,58 @@
     [quil.middleware :as m]))
 
 (def radians #(/ (* % Math/PI) 180))
-(def max-life 1000)
 
-(defn particle [{:keys [x y angle speed]}]
-  {:x x, :y y 
-   :velocity [(* speed (Math/cos (radians angle)))
-              (* speed (Math/sin (radians angle)) -1)] 
-   :color [255 0 0]
-   :size [20 20]
-   :life max-life})
+(def map+ (partial map +))
+(def map* (partial map *))
 
-(defn rand-particle []
-  (particle
-    {:x (/ (q/width) 2)
-     :y (/ (q/height) 2)
-     :angle (rand-int 360)
-     :speed (rand 10)}))
+(def rand-angle #(- 102.5 (rand-int 25)))
+(def rand-speed #(max 7 (rand 12)))
+(def rand-gray #(let [c (+ 32 (rand-int 64))] [c c c (rand-int 256)]))
+(def rand-size #(let [x (rand-int 10)] [x x]))
 
-(defn setup []
-  (q/frame-rate 60)
-  (repeatedly 10 rand-particle))
+(defn particle [angle speed]
+  (let [max-life 10]
+    {:pos [(+ 350 (rand (- (q/width) 700))) (q/height)]
+     :velocity [(* speed (Math/cos (radians angle)))
+                (* speed (Math/sin (radians angle)) -1)] 
+     :color (rand-gray)
+     :size (rand-size)
+     :start-life max-life
+     :life max-life}))
+
+(def rand-particle #(particle (rand-angle) (rand-speed)))
+
+(defn emit-particle [particles]
+  (into particles (repeatedly (rand-int 25) rand-particle)))
+
+(defn age-particle
+  [{:keys [velocity life start-life] :as m}]
+  (-> m
+      (update :pos map+ velocity)
+      (update :size map* (repeat (/ life start-life)))
+      (update :life #(- % 0.01))))
+
+(defn old? [p] (-> p :life pos? not))
 
 (defn step [particles]
-  (concat
-    (repeatedly 5 rand-particle)
-    (keep
-      (fn [{x :x, y :y, [vx vy] :velocity, life :life, :as m}]
-        (when (pos? life)
-          (-> m
-              (update :x + vx)
-              (update :y + vy)
-              (update :size (partial map *) (repeat (/ life max-life)))
-              (update :life dec))))
-      particles)))
+  (->> particles
+       emit-particle
+       (map age-particle)
+       (remove old?)))
+
+;; -----------------------------------------------------------------------------
+
+(defn setup []
+  (q/frame-rate 30)
+  (repeatedly 10 rand-particle))
 
 (defn draw [particles]
   (q/background 54 69 79) ; charcoal gray
   (q/no-stroke)
-  (doseq [{:keys [x y color size life]} particles] 
+  (doseq [{:keys [pos color size life]} particles] 
     (q/push-matrix)
-    (q/translate x y)
-    (let [[r g b] color] (q/fill r g b life))
+    (apply q/translate pos)
+    (apply q/fill color)
     (let [[w h] size] (q/ellipse 0 0 w h))
     (q/pop-matrix)))
 
