@@ -3,16 +3,16 @@
     [quil.core :as q]
     [particles.util :refer :all]))
 
-(def rand-speed #(max 5 (rand 15)))
-(def rand-angle #(+ 85 (rand 10)))
+(def rand-speed #(+ 15 (rand 3)))
+(def rand-angle #(+ 60 (rand 8)))
 
 (defn particle []
   (let [speed (rand-speed), angle (rand-angle)]
-    {:pos [(/ (q/width) 2) (q/height)] 
-     :acceleration [0 0.2]
+    {:pos [100 (q/height)] 
+     :acceleration [0 0.25]
      :velocity [(* speed (Math/cos (radians angle)))
                 (* speed (Math/sin (radians angle)) -1)] 
-     :size 10}))
+     :size 32}))
 
 (defn off-screen? [{:keys [pos]}]
   (let [[x y] pos]
@@ -36,7 +36,7 @@
   (q/frame-rate 60)
   (q/blend-mode :add)
   (reset! image (q/load-image "particleTexture.png"))
-  (q/resize @image 10 0)
+  (q/resize @image 32 0)
   (repeatedly 1000 particle))
 
 (defn step [particles]
@@ -49,7 +49,7 @@
     (q/push-matrix)
     (apply q/translate pos)
     (q/begin-shape)
-    (q/tint 100 100 0 255)
+    (q/tint 0 32 128 64)
     (q/texture @image)
     (q/vertex 0 0 0 0)
     (q/vertex size 0 size 0)
