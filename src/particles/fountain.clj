@@ -9,6 +9,8 @@
 (defn particle []
   (let [speed (rand-speed), angle (rand-angle)]
     {:pos [100 (q/height)] 
+     :color [0 32 128]
+     :alpha (rand-int 128)
      :acceleration [0 0.25]
      :velocity [(* speed (Math/cos (radians angle)))
                 (* speed (Math/sin (radians angle)) -1)] 
@@ -33,11 +35,11 @@
 (defonce image (atom nil))
 
 (defn setup []
-  (q/frame-rate 60)
+  (q/frame-rate 90)
   (q/blend-mode :add)
   (reset! image (q/load-image "particleTexture.png"))
   (q/resize @image 32 0)
-  (repeatedly 1000 particle))
+  (repeatedly 2000 particle))
 
 (defn step [particles]
   (map (comp emit-particle move-particle) particles))
@@ -45,11 +47,12 @@
 (defn draw [particles]
   (q/background 16 16 16)
   (q/no-stroke)
-  (doseq [{:keys [pos size]} (remove off-screen? particles)] 
+  (doseq [{:keys [pos size color alpha]} (remove off-screen? particles)] 
     (q/push-matrix)
     (apply q/translate pos)
     (q/begin-shape)
-    (q/tint 0 32 128 64)
+    (let [[r g b] color] (q/tint r g b alpha))
+    #_(q/tint 0 32 128 64)
     (q/texture @image)
     (q/vertex 0 0 0 0)
     (q/vertex size 0 size 0)

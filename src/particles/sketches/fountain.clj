@@ -10,7 +10,7 @@
   :setup fountain/setup
   :update fountain/step
   :draw fountain/draw
-  :renderer :p2d
+  :renderer :opengl
   :features [:keep-on-top :no-safe-fns]
   :middleware [m/fun-mode])
 
