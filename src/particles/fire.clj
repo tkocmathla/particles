@@ -35,7 +35,7 @@
       (update :velocity map* (repeat 0.995))
       (update :pos map+ velocity)
       (assoc :alpha (* 255 (/ life start-life)))
-      (update :life #(- % 0.2 #_(rand 0.01)))))
+      (update :life #(- % 0.2))))
 
 ;; -----------------------------------------------------------------------------
 

@@ -4,7 +4,7 @@
     [quil.middleware :as m]
     [particles.fire :as fire]))
 
-(q/defsketch particles
+(q/defsketch fire
   :title "Fire"
   :size [750 750]
   :setup fire/setup
