@@ -1,16 +1,16 @@
 (ns particles.fire
   (:require
     [quil.core :as q]
+    [particles.emitter :as emitter]
     [particles.util :refer :all]))
 
+(def max-particles 1000)
 (def rand-pos #(vector (+ 300 (rand (- (q/width) 600))) (q/height)))
 (def rand-speed #(max 1.5 (rand 7)))
 (def rand-life #(inc (rand-int 30)))
 (defn rand-angle [x]
   (let [sign (if (> x (/ (q/width) 2)) 1 -1)]
     (+ 90 (* sign 6))))
-
-(defn old? [p] (-> p :life pos? not))
 
 (defn particle []
   (let [start-life (rand-life)
@@ -26,8 +26,11 @@
      :life life
      :alpha 255}))
 
-(defn emit-particle [p]
-  (if (old? p) (particle) p))
+(defn old? [p] (-> p :life pos? not))
+
+(defn emit-particle
+  ([] (particle))
+  ([p] (if (old? p) (particle) p)))
 
 (defn age-particle
   [{:keys [velocity life start-life] :as m}]
@@ -46,10 +49,10 @@
   (q/blend-mode :add)
   (reset! image (q/load-image "particleTexture.png"))
   (q/resize @image 100 0)
-  (repeatedly 1000 particle))
+  (repeatedly max-particles particle))
 
-(defn step [particles]
-  (map (comp emit-particle age-particle) particles))
+(def step
+  (partial emitter/step emit-particle age-particle max-particles 100))
 
 (defn draw [particles]
   (q/background 16 16 16)

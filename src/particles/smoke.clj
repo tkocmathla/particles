@@ -1,8 +1,10 @@
 (ns particles.smoke
   (:require
     [quil.core :as q]
+    [particles.emitter :as emitter]
     [particles.util :refer :all]))
 
+(def max-particles 1000)
 (def rand-pos #(vector (+ 300 (rand (- (q/width) 600))) (q/height)))
 (def rand-speed #(max 0.1 (rand 3)))
 (def rand-life #(inc (rand-int 9)))
@@ -10,7 +12,9 @@
 (defn old? [p] (-> p :life pos? not))
 
 (defn particle []
-  (let [start-life (rand-life), life (min start-life (rand-life)), speed (rand-speed)]
+  (let [start-life (rand-life)
+        life (min start-life (rand-life))
+        speed (rand-speed)]
     {:pos (rand-pos)
      :velocity [(* speed (Math/cos (radians 90)))
                 (* speed (Math/sin (radians 90)) -1)] 
@@ -19,8 +23,9 @@
      :life life
      :alpha 255}))
 
-(defn emit-particle [p]
-  (if (old? p) (particle) p))
+(defn emit-particle
+  ([] (particle))
+  ([p] (if (old? p) (particle) p)))
 
 (defn age-particle
   [{:keys [velocity life start-life] :as m}]
@@ -35,14 +40,14 @@
 (defonce image (atom nil))
 
 (defn setup []
-  (q/frame-rate 60)
+  (q/frame-rate 90)
   (q/blend-mode :add)
   (reset! image (q/load-image "particleTexture.png"))
   (q/resize @image 64 0)
-  (repeatedly 1000 particle))
+  [(particle)])
 
-(defn step [particles]
-  (map (comp emit-particle age-particle) particles))
+(def step
+  (partial emitter/step emit-particle age-particle max-particles 10))
 
 (defn draw [particles]
   (q/background 16 16 16)

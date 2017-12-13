@@ -13,4 +13,3 @@
   :renderer :opengl
   :features [:keep-on-top :no-safe-fns]
   :middleware [m/fun-mode])
-
