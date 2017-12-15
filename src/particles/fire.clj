@@ -4,12 +4,18 @@
     [particles.emitter :as emitter]
     [particles.util :refer :all]))
 
+;; texture, blending, opacity
+
+(defn left-of-center? [x]
+  (> x (/ (q/width) 2)))
+
 (def max-particles 1000)
+(def rate 100)
 (def rand-pos #(vector (+ 300 (rand (- (q/width) 600))) (q/height)))
 (def rand-speed #(max 1.5 (rand 7)))
 (def rand-life #(inc (rand-int 30)))
 (defn rand-angle [x]
-  (let [sign (if (> x (/ (q/width) 2)) 1 -1)]
+  (let [sign (if (left-of-center? x) 1 -1)]
     (+ 90 (* sign 6))))
 
 (defn particle []
@@ -52,7 +58,7 @@
   (repeatedly max-particles particle))
 
 (def step
-  (partial emitter/step emit-particle age-particle max-particles 100))
+  (partial emitter/step emit-particle age-particle max-particles rate))
 
 (defn draw [particles]
   (q/background 16 16 16)

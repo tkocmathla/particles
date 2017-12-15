@@ -4,7 +4,10 @@
     [particles.emitter :as emitter]
     [particles.util :refer :all]))
 
+;; texture, blending, opacity
+
 (def max-particles 1000)
+(def rate 5)
 (def rand-speed #(+ 15 (rand 3)))
 (def rand-angle #(+ 60 (rand 8)))
 (def rand-alpha #(rand-int 175))
@@ -46,7 +49,7 @@
   [(particle)])
 
 (def step
-  (partial emitter/step emit-particle move-particle max-particles 5))
+  (partial emitter/step emit-particle move-particle max-particles rate))
 
 (defn draw [particles]
   (q/background 16 16 16)

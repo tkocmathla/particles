@@ -4,7 +4,10 @@
     [particles.emitter :as emitter]
     [particles.util :refer :all]))
 
+;; gravity, bounciness
+
 (def max-particles 10)
+(def rate 1)
 (def bounciness 0.7)
 (def rand-speed #(+ 20 (rand 10)))
 (def rand-angle #(+ 87 (rand 6)))
@@ -24,6 +27,9 @@
 
 (defn old? [p] (-> p :life pos? not))
 
+(defn at-bottom? [size y]
+  (> y (- (q/height) (/ size 2))))
+
 (defn emit-particle
   ([] (particle))
   ([p] (if (old? p) (particle) p)))
@@ -39,30 +45,30 @@
     [(+ x vx) (+ y vy)]))
 
 (defn age-particle
-  [{:keys [size pos acceleration velocity life start-life] :as m}]
+  [{:keys [size pos acceleration velocity life start-life] :as p}]
   (let [[x y] pos
         [ax ay] acceleration
         [vx vy] velocity
-        sign (if (> y (- (q/height) (/ size 2))) -1 1)]
-    (-> m
+        sign (if (at-bottom? size y) -1 1)]
+    (-> p
         (update :velocity (partial update-vel sign acceleration))
         (update :pos (partial update-pos size sign velocity))
-        (update :life #(- % 0.2)))))
+        (update :life #(- % (+ 0.10 (rand 0.2)))))))
 
 (defn draw-pipe []
   (q/fill 100)
   (q/stroke-weight 3)
   (q/stroke 0 0 0)
-  (q/rect (- (/ (q/width) 2) 15) (- (q/height) 64) 30 64))
+  (q/rect (- (/ (q/width) 2) 20) (- (q/height) 64) 40 64))
 
 ;; -----------------------------------------------------------------------------
 
 (defn setup []
   (q/frame-rate 60)
-  (repeatedly max-particles particle))
+  [(particle)])
 
 (def step
-  (partial emitter/step emit-particle age-particle max-particles 1))
+  (partial emitter/step emit-particle age-particle max-particles rate))
 
 (defn draw [particles]
   (q/background 16 16 16)
