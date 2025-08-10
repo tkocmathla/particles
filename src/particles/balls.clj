@@ -6,10 +6,10 @@
 
 ;; gravity, bounciness
 
-(def max-particles 10)
+(def max-particles 25)
 (def rate 1)
-(def bounciness 0.7)
-(def rand-speed #(+ 20 (rand 10)))
+(def bounciness 0.5)
+(def rand-speed #(+ 40 (rand 10)))
 (def rand-angle #(+ 87 (rand 6)))
 (def rand-size #(+ 16 (rand-int 16)))
 (def rand-color #(rand-nth [[255 0 0] [0 255 0] [0 0 255]]))

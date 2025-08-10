@@ -45,7 +45,6 @@
   (q/frame-rate 60)
   (q/blend-mode :add)
   (reset! image (q/load-image "particleTexture.png"))
-  (q/resize @image 32 0)
   [(particle)])
 
 (def step

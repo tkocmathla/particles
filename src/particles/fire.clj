@@ -54,7 +54,6 @@
   (q/frame-rate 60)
   (q/blend-mode :add)
   (reset! image (q/load-image "particleTexture.png"))
-  (q/resize @image 100 0)
   (repeatedly max-particles particle))
 
 (def step
@@ -67,7 +66,7 @@
     (q/push-matrix)
     (apply q/translate pos)
     (q/begin-shape)
-    (q/tint 16 16 100 alpha)
+    (q/tint 100 50 0 alpha)
     (q/texture @image)
     (q/vertex 0 0 0 0)
     (q/vertex size 0 size 0)

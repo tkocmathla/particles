@@ -10,20 +10,18 @@
 (def rate max-particles)
 (def rand-speed #(+ 5 (rand 30)))
 (def rand-angle #(rand 360))
-(def rand-alpha #(+ 255 (rand 127)))
 (def rand-pos #(vector (rand (q/width)) (rand (q/height))))
 (def rand-tint #(vector (rand-int 256) 255 (rand-int 256)))
 
 (defn particle [pos]
   (let [speed (rand-speed), angle (rand-angle)]
     {:pos pos
-     :alpha (rand-alpha) 
      :acceleration [0 0.05]
      :velocity [(* speed (Math/cos (radians angle)))
                 (* speed (Math/sin (radians angle)) -1)] 
      :color (rand-tint)
-     :size 8
-     :life 255}))
+     :size 9
+     :life 175}))
 
 (defn old? [p] (-> p :life pos? not))
 
@@ -47,7 +45,6 @@
   (q/frame-rate 60)
   (q/blend-mode :add)
   (reset! image (q/load-image "particleTexture.png"))
-  (q/resize @image 8 0)
   [])
 
 (defn step [particles]
@@ -56,7 +53,7 @@
 (defn draw [particles]
   (q/background 16 16 16)
   (q/no-stroke)
-  (doseq [{:keys [pos size color alpha]} particles] 
+  (doseq [{:keys [pos size color]} particles]
     (q/push-matrix)
     (apply q/translate pos)
     (q/begin-shape)

@@ -46,7 +46,6 @@
   (q/frame-rate 90)
   (q/blend-mode :add)
   (reset! image (q/load-image "particleTexture.png"))
-  (q/resize @image 64 0)
   [(particle)])
 
 (def step
@@ -55,7 +54,7 @@
 (defn draw [particles]
   (q/background 16 16 16)
   (q/no-stroke)
-  (doseq [{:keys [pos alpha size life start-life]} (remove old? particles)] 
+  (doseq [{:keys [pos alpha size life start-life]} (remove old? particles)]
     (q/push-matrix)
     (apply q/translate pos)
     (q/begin-shape)

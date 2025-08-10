@@ -10,6 +10,6 @@
   :setup smoke/setup
   :update smoke/step
   :draw smoke/draw
-  :renderer :p2d
+  :renderer :opengl
   :features [:keep-on-top :no-safe-fns]
   :middleware [m/fun-mode])
